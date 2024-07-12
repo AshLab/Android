@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/textDistance"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/textCurLong"
+        android:layout_width="140dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="188dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="83dp"
+        android:layout_marginBottom="356dp"
+        android:text="Lat"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textCurLat" />
+
+    <TextView
+        android:id="@+id/labelCur"
+        android:layout_width="78dp"
+        android:layout_height="20dp"
+        android:text="Current"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.102"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.436" />
+
+    <TextView
+        android:id="@+id/textDesLong"
+        android:layout_width="133dp"
+        android:layout_height="22dp"
+        android:layout_marginStart="197dp"
+        android:layout_marginTop="47dp"
+        android:layout_marginEnd="81dp"
+        android:layout_marginBottom="531dp"
+        android:text="Long"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textDesLat" />
+
+    <TextView
+        android:id="@+id/labelDes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Destination"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.104"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.223" />
+
+    <TextView
+        android:id="@+id/textDesLat"
+        android:layout_width="133dp"
+        android:layout_height="22dp"
+        android:layout_marginStart="197dp"
+        android:layout_marginTop="109dp"
+        android:layout_marginEnd="81dp"
+        android:layout_marginBottom="47dp"
+        android:text="Lat"
+        app:layout_constraintBottom_toTopOf="@+id/textDesLong"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textCurLat"
+        android:layout_width="140dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="188dp"
+        android:layout_marginTop="43dp"
+        android:layout_marginEnd="83dp"
+        android:layout_marginBottom="68dp"
+        android:text="Lat"
+        app:layout_constraintBottom_toTopOf="@+id/textCurLong"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textDesLong" />
+
+    <TextView
+        android:id="@+id/labelDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="34dp"
+        android:layout_marginTop="132dp"
+        android:layout_marginEnd="73dp"
+        android:layout_marginBottom="250dp"
+        android:text="DIstance(m)"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/textDist"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/labelCur" />
+
+    <TextView
+        android:id="@+id/textDist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="73dp"
+        android:layout_marginTop="85dp"
+        android:layout_marginEnd="165dp"
+        android:layout_marginBottom="252dp"
+        android:text="distance"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/labelDistance"
+        app:layout_constraintTop_toBottomOf="@+id/textCurLong" />
+
+    <Switch
+        android:id="@+id/locEnable"
+        android:layout_width="117dp"
+        android:layout_height="58dp"
+        android:layout_marginStart="130dp"
+        android:layout_marginTop="206dp"
+        android:layout_marginEnd="193dp"
+        android:layout_marginBottom="123dp"
+        android:text="Enable"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.586"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textCurLong"
+        app:layout_constraintVertical_bias="0.483" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
