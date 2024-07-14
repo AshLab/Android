@@ -20,6 +20,7 @@ import androidx.core.app.ActivityCompat;
 
 public class MainActivity extends AppCompatActivity {
 
+    //Adding comment to test the commit
     private TextView textView;
     private Button vibrateBut;
     private LocationManager locationManager;
