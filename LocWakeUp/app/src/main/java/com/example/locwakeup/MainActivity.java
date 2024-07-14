@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.health.connect.datatypes.ExerciseRoute;
 import android.location.Location;
@@ -15,6 +16,8 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Switch;
@@ -23,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView textDesLat, textDesLong, textCurLat, textCurLong, textDist;
     private Switch aSwitch;
+
+    private Button  button;
 
     private Vibrator vibrator;
     private MediaPlayer mediaPlayer;
@@ -36,10 +41,10 @@ public class MainActivity extends AppCompatActivity {
 
     //Internal Variables
 
-    private long locUpdateDelay=1000;  //in milli seconds
-    private float locMinDistance=0;  //in milli seconds
+    private long locUpdateDelay=5000;  //in milli seconds
+    private float locMinDistance=100;  //in meters
 
-    private float alarmDistance = 7000; //in meters
+    private float alarmDistance = 1000; //in meters
 
     private long vibrationTime = 10000;
 
@@ -68,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
         textDist=findViewById(R.id.textDist);
         aSwitch=findViewById(R.id.locEnable);
 
+        button=findViewById(R.id.buttonAdd);
+
         //Initialize Location Manager, Vibrator & Media player
         locationManager=(LocationManager) getSystemService(LOCATION_SERVICE);
         vibrator=(Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -84,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
 
         //Initialize Slide Switch and Call back
         initializeSlideSwitch();
+
+        initializeButton();
 
 
         //Check and Get Permission for Location Service
@@ -121,6 +130,17 @@ public class MainActivity extends AppCompatActivity {
             }
             else{
                 switchStatus=0;
+            }
+        });
+    }
+
+    private void initializeButton()
+    {
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, subActivity.class);
+                startActivity(intent);
             }
         });
     }
