@@ -108,18 +108,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onDestroy()
-    {
-        super.onDestroy();
-        // Release the MediaPlayer resource when the activity is destroyed
-        if (mediaPlayer != null) {
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
-    }
-
-
     //Register Switch Callback
 
     private void initializeSlideSwitch()
@@ -127,9 +115,20 @@ public class MainActivity extends AppCompatActivity {
         aSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if(isChecked){
                 switchStatus=1;
+                Intent intent = new Intent(MainActivity.this, BackgroundActivity.class);
+                intent.putExtra("destinationLat", destinationLat);
+                intent.putExtra("destinationLong", destinationLong);
+                intent.putExtra("vibrationTime", vibrationTime);
+                intent.putExtra("alarmDistance", alarmDistance);
+                intent.putExtra("locUpdateDelay", locUpdateDelay);
+                intent.putExtra("locMinDistance", locMinDistance);
+
+                startService(intent);
             }
             else{
                 switchStatus=0;
+                Intent intent = new Intent(MainActivity.this, BackgroundActivity.class);
+                stopService(intent);
             }
         });
     }
@@ -196,24 +195,46 @@ public class MainActivity extends AppCompatActivity {
 
     textDist.setText("Dis " + distance);
 
-    if(switchStatus==1)
-    {
-        startAlarm();
-    }
+    //if(switchStatus==1)
+    //{
+      //  startAlarm();
+    //}
    }
 
-    private void startAlarm()
-    {
-        if( distance < alarmDistance)
-        {
-            vibrator.vibrate(VibrationEffect.createOneShot(vibrationTime,VibrationEffect.DEFAULT_AMPLITUDE));
+//    private void startAlarm()
+//    {
+//        if( distance < alarmDistance)
+//        {
+//            vibrator.vibrate(VibrationEffect.createOneShot(vibrationTime,VibrationEffect.DEFAULT_AMPLITUDE));
+//
+//            if (mediaPlayer != null) {
+//                mediaPlayer.start();
+//            }
+//
+//            switchStatus=0; //Alarm once
+//        }
+//    }
 
-            if (mediaPlayer != null) {
-                mediaPlayer.start();
-            }
 
-            switchStatus=0; //Alarm once
+ protected void onDestroy()
+ {
+        super.onDestroy();
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
         }
-    }
+        if (vibrator != null) {
+            vibrator.cancel();
+            vibrator = null;
+        }
+
+        if (locationManager != null) {
+            locationManager.removeUpdates(locationListener);
+            locationManager = null;
+        }
+
+        Intent intent = new Intent(MainActivity.this, BackgroundActivity.class);
+        stopService(intent);
+ }
 
 }
