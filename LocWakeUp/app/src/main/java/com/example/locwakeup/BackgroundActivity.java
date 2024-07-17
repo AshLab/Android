@@ -1,12 +1,17 @@
 package com.example.locwakeup;
 
 import android.Manifest;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.VibrationEffect;
@@ -17,15 +22,17 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 
 public class BackgroundActivity extends Service {
 
     //Log Tag
     private static final String TAG = BackgroundActivity.class.getSimpleName();
+    private static final String CHANNEL_ID = "LocationServiceChannel";
 
     private PowerManager.WakeLock wakeLock;
     private LocationManager locationManager;
-    private LocationListener locationListener;
+    //private LocationListener locationListener;
     private Location targetLocation;
 
     private Vibrator vibrator;
@@ -33,8 +40,8 @@ public class BackgroundActivity extends Service {
 
     //Variables and Configuration
     private final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    private long locUpdateDelay = 1000;
-    private float locMinDistance = 1;
+    private long locUpdateDelay = 5000;
+    private float locMinDistance = 100;
 
     private double destinationLatitude = 0;
     private double destinationLongitude = 0;
@@ -50,6 +57,16 @@ public class BackgroundActivity extends Service {
 
         Log.d(TAG, "onCreate");
 
+        createNotificationChannel();
+
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("Location Service")
+                .setContentText("Tracking location in the background")
+                .setSmallIcon(R.drawable.ic_location)
+                .build();
+
+        startForeground(1, notification);
+
         locationManager= (LocationManager) getSystemService(LOCATION_SERVICE);
         vibrator= (Vibrator) getSystemService(VIBRATOR_SERVICE);
         mediaPlayer = MediaPlayer.create(this, R.raw.drum);
@@ -57,7 +74,7 @@ public class BackgroundActivity extends Service {
         Log.d(TAG, "onCreate: Loc,Vibrator & MediaPlayer initialized");
 
         wakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "BackgroundActivity:WakeLock");
-        wakeLock.acquire(10*60*1000L*60 /*600 minutes*/);
+        wakeLock.acquire(10*60*60*1000L /*600 minutes*/);
 
         Log.d(TAG, "onCreate: WakeLock acquired");
     }
@@ -67,11 +84,13 @@ public class BackgroundActivity extends Service {
 
             Log.d(TAG, "onStartCommand");
 
-            locUpdateDelay = intent.getLongExtra("locUpdateDelay", 1000);
-            locMinDistance = intent.getLongExtra("locMinDistance", 1);
+            targetLocation = new Location("");
 
-            destinationLatitude= intent.getDoubleExtra("destinationLatitude", 0);
-            destinationLongitude= intent.getDoubleExtra("destinationLongitude", 0);
+            locUpdateDelay = intent.getLongExtra("locUpdateDelay", 1000);
+            locMinDistance = intent.getFloatExtra("locMinDistance", 1);
+
+            destinationLatitude= intent.getDoubleExtra("destinationLat", 0);
+            destinationLongitude= intent.getDoubleExtra("destinationLong", 0);
 
             alarmDistance = intent.getFloatExtra("alarmDistance", 10);
             vibrationTime = intent.getLongExtra("vibrationTime", 500);
@@ -90,8 +109,9 @@ public class BackgroundActivity extends Service {
 
             else
             {
-                startLocationUpdates();
                 Log.d(TAG, "onStartCommand: Location Permission granted");
+                startLocationUpdates();
+                Log.d(TAG, "Location Update Started");
             }
 
 
@@ -105,21 +125,35 @@ public class BackgroundActivity extends Service {
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, locUpdateDelay, locMinDistance, locationListener);
-
+            Log.d(TAG, "startLocationUpdates: Location Permission granted");
         }
 
-        locationListener=new LocationListener()
-        {
-            @Override
-            public void onLocationChanged(@NonNull Location location)
-            {
-
-                startAlarm(calculateDistance(location));
-
-            }
-        };
-
     }
+
+    private final LocationListener locationListener=new LocationListener()
+    {
+        @Override
+        public void onLocationChanged(@NonNull Location location)
+        {
+
+            startAlarm(calculateDistance(location));
+
+            Log.d(TAG, "onLocationChanged: " + location.getLatitude() + " " + location.getLongitude());
+            Log.d(TAG, "onLocationChanged: " + targetLocation.getLatitude() + " " + targetLocation.getLongitude());
+
+        }
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+
+        @Override
+        public void onProviderEnabled(@NonNull String provider) {
+        }
+
+        @Override
+        public void onProviderDisabled(@NonNull String provider) {
+        }
+    };
 
     private float calculateDistance(Location location)
     {
@@ -130,11 +164,14 @@ public class BackgroundActivity extends Service {
 
     private void startAlarm(float distance)
     {
+        Log.d(TAG, "startAlarm: " + distance);
         if( distance < alarmDistance && alarmStatus == 0)
         {
+            Log.d(TAG, "startAlarm: Alarm Started");
             vibrator.vibrate(VibrationEffect.createOneShot(vibrationTime,VibrationEffect.DEFAULT_AMPLITUDE));
 
             if (mediaPlayer != null) {
+                Log.d(TAG, "startAlarm: MediaPlayer not null");
                 mediaPlayer.start();
             }
 
@@ -145,7 +182,7 @@ public class BackgroundActivity extends Service {
     public void onDestroy()
     {
         super.onDestroy();
-        if (locationManager != null && locationListener != null)
+        if (locationManager != null )
         {
             locationManager.removeUpdates(locationListener);
         }
@@ -157,6 +194,21 @@ public class BackgroundActivity extends Service {
             wakeLock.release();
         }
         Log.d(TAG, "onDestroy");
+    }
+
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel serviceChannel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "Location Service Channel",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            if (manager != null) {
+                manager.createNotificationChannel(serviceChannel);
+            }
+        }
     }
 
     @Nullable

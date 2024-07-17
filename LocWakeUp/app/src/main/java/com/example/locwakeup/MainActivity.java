@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     //Internal Variables
 
     private long locUpdateDelay=5000;  //in milli seconds
-    private float locMinDistance=100;  //in meters
+    private float locMinDistance=10;  //in meters
 
     private float alarmDistance = 1000; //in meters
 
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         button=findViewById(R.id.buttonAdd);
 
         //Initialize Location Manager, Vibrator & Media player
-        locationManager=(LocationManager) getSystemService(LOCATION_SERVICE);
+        //locationManager=(LocationManager) getSystemService(LOCATION_SERVICE);
         vibrator=(Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         mediaPlayer=MediaPlayer.create(this,R.raw.drum);
 
@@ -151,33 +151,33 @@ public class MainActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, locUpdateDelay, locMinDistance, locationListener);
+           // locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, locUpdateDelay, locMinDistance, locationListener);
 
         }
 
     }
 
     //Location Listener Callback
-    private final LocationListener locationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(@NonNull Location location) {
-
-            updateLocation(location);
-            calculateDistance(location);
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-        }
-
-        @Override
-        public void onProviderEnabled(@NonNull String provider) {
-        }
-
-        @Override
-        public void onProviderDisabled(@NonNull String provider) {
-        }
-    };
+//    private final LocationListener locationListener = new LocationListener() {
+//        @Override
+//        public void onLocationChanged(@NonNull Location location) {
+//
+//            updateLocation(location);
+//            calculateDistance(location);
+//        }
+//
+//        @Override
+//        public void onStatusChanged(String provider, int status, Bundle extras) {
+//        }
+//
+//        @Override
+//        public void onProviderEnabled(@NonNull String provider) {
+//        }
+//
+//        @Override
+//        public void onProviderDisabled(@NonNull String provider) {
+//        }
+//    };
 
    private void updateLocation(Location location)
    {
@@ -227,14 +227,16 @@ public class MainActivity extends AppCompatActivity {
             vibrator.cancel();
             vibrator = null;
         }
-
-        if (locationManager != null) {
-            locationManager.removeUpdates(locationListener);
-            locationManager = null;
-        }
+//
+//        if (locationManager != null) {
+//            locationManager.removeUpdates(locationListener);
+//            locationManager = null;
+//        }
 
         Intent intent = new Intent(MainActivity.this, BackgroundActivity.class);
         stopService(intent);
  }
+
+
 
 }
