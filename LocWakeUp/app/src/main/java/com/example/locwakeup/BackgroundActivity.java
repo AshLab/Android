@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -22,7 +21,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
 
 public class BackgroundActivity extends Service {
 
@@ -57,14 +55,16 @@ public class BackgroundActivity extends Service {
 
         Log.d(TAG, "onCreate");
 
-        createNotificationChannel();
+        NotificationManager notificationManager;
 
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+        notificationManager=createNotificationChannel();
+
+        Notification notification = new Notification.Builder(this, CHANNEL_ID)
                 .setContentTitle("Location Service")
                 .setContentText("Tracking location in the background")
                 .setSmallIcon(R.drawable.ic_location)
                 .build();
-
+       // notificationManager.notify(1, notification);
         startForeground(1, notification);
 
         locationManager= (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -135,9 +135,12 @@ public class BackgroundActivity extends Service {
         @Override
         public void onLocationChanged(@NonNull Location location)
         {
+            float distance = calculateDistance(location);
 
-            startAlarm(calculateDistance(location));
+            startAlarm(distance);
+            broadcastLocation(location, distance);
 
+            Log.d(TAG, "onLocationChanged: " + distance);
             Log.d(TAG, "onLocationChanged: " + location.getLatitude() + " " + location.getLongitude());
             Log.d(TAG, "onLocationChanged: " + targetLocation.getLatitude() + " " + targetLocation.getLongitude());
 
@@ -197,8 +200,8 @@ public class BackgroundActivity extends Service {
     }
 
 
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    private  NotificationManager createNotificationChannel() {
+
             NotificationChannel serviceChannel = new NotificationChannel(
                     CHANNEL_ID,
                     "Location Service Channel",
@@ -208,7 +211,17 @@ public class BackgroundActivity extends Service {
             if (manager != null) {
                 manager.createNotificationChannel(serviceChannel);
             }
-        }
+
+        return manager;
+
+    }
+
+    private void broadcastLocation(Location location, float distance)
+    {
+        Intent intent = new Intent("locWakeUp_location_update");
+        intent.putExtra("location", location);
+        intent.putExtra("distance", distance);
+        sendBroadcast(intent);
     }
 
     @Nullable

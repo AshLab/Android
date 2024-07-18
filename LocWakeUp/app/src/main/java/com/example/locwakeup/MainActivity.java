@@ -1,12 +1,16 @@
 package com.example.locwakeup;
 
+import static android.util.Log.d;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.health.connect.datatypes.ExerciseRoute;
 import android.location.Location;
@@ -16,6 +20,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -24,29 +29,26 @@ import android.widget.Switch;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
+
     private TextView textDesLat, textDesLong, textCurLat, textCurLong, textDist;
     private Switch aSwitch;
 
     private Button  button;
 
-    private Vibrator vibrator;
-    private MediaPlayer mediaPlayer;
-
-    private LocationManager locationManager;
-
-    private Location targetLocation = new Location("");
+    private BroadcastReceiver broadcastReceiver;
 
     //Static Codes
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     //Internal Variables
 
-    private long locUpdateDelay=5000;  //in milli seconds
-    private float locMinDistance=10;  //in meters
+    private long locUpdateDelay=1000;  //in milli seconds
+    private float locMinDistance=1;  //in meters
 
     private float alarmDistance = 1000; //in meters
 
-    private long vibrationTime = 10000;
+    private long vibrationTime = 20000;
 
     private double destinationLat = 12.926235;
     private double destinationLong= 77.683202;
@@ -77,16 +79,13 @@ public class MainActivity extends AppCompatActivity {
 
         //Initialize Location Manager, Vibrator & Media player
         //locationManager=(LocationManager) getSystemService(LOCATION_SERVICE);
-        vibrator=(Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        mediaPlayer=MediaPlayer.create(this,R.raw.drum);
+
 
         //Update Destination Lat and Long
         textDesLat.setText("Lat " + destinationLat);
         textDesLong.setText("Long " + destinationLong );
 
-        //Set Target Locations to calculate distance
-        targetLocation.setLatitude(destinationLat);
-        targetLocation.setLongitude(destinationLong);
+
 
 
         //Initialize Slide Switch and Call back
@@ -94,14 +93,14 @@ public class MainActivity extends AppCompatActivity {
 
         initializeButton();
 
+        initializeBroadcast();
+
 
         //Check and Get Permission for Location Service
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-        } else {
-            startLocationUpdates();
         }
 
 
@@ -112,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeSlideSwitch()
     {
+        Log.d(TAG, "initializeSlideSwitch: ");
         aSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if(isChecked){
                 switchStatus=1;
@@ -135,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeButton()
     {
+        Log.d(TAG, "initializeButton: ");
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -145,96 +146,65 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    //Registering Location Listener
-    private void startLocationUpdates()
-    {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-           // locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, locUpdateDelay, locMinDistance, locationListener);
 
-        }
-
-    }
-
-    //Location Listener Callback
-//    private final LocationListener locationListener = new LocationListener() {
-//        @Override
-//        public void onLocationChanged(@NonNull Location location) {
-//
-//            updateLocation(location);
-//            calculateDistance(location);
-//        }
-//
-//        @Override
-//        public void onStatusChanged(String provider, int status, Bundle extras) {
-//        }
-//
-//        @Override
-//        public void onProviderEnabled(@NonNull String provider) {
-//        }
-//
-//        @Override
-//        public void onProviderDisabled(@NonNull String provider) {
-//        }
-//    };
-
-   private void updateLocation(Location location)
+   private void updateLocation(Location location, float distance)
    {
+       Log.d(TAG, "updateLocation: ");
        double latitude = location.getLatitude();
        double longitude = location.getLongitude();
 
        //Update Current Lat and Long
        textCurLat.setText("Lat " + latitude);
        textCurLong.setText("Long " + longitude);
+
+       //Update Distance
+       textDist.setText("Dist " + distance);
    }
 
-   private void calculateDistance(Location location)
+   private void initializeBroadcast()
    {
-    distance =location.distanceTo(targetLocation);
+        broadcastReceiver=new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Location location = intent.getParcelableExtra("location");
+                distance = intent.getFloatExtra("distance", 0);
 
-    textDist.setText("Dis " + distance);
+                Log.d(TAG, "Broadcast Received: Location " + location.getLatitude() + " " + location.getLongitude());
+                Log.d(TAG, "Broadcast Received: Distance " + distance);
 
-    //if(switchStatus==1)
-    //{
-      //  startAlarm();
-    //}
+                if (location != null) {
+                    updateLocation(location, distance);
+                }
+
+
+            }
+        };
+
+
+        IntentFilter intentFilter = new IntentFilter("locWakeUp_location_update");
+        registerReceiver(broadcastReceiver, intentFilter);
+
    }
 
-//    private void startAlarm()
-//    {
-//        if( distance < alarmDistance)
-//        {
-//            vibrator.vibrate(VibrationEffect.createOneShot(vibrationTime,VibrationEffect.DEFAULT_AMPLITUDE));
-//
-//            if (mediaPlayer != null) {
-//                mediaPlayer.start();
-//            }
-//
-//            switchStatus=0; //Alarm once
-//        }
-//    }
+
+
 
 
  protected void onDestroy()
  {
+     Log.d(TAG, "onDestroy: ");
         super.onDestroy();
-        if (mediaPlayer != null) {
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
-        if (vibrator != null) {
-            vibrator.cancel();
-            vibrator = null;
-        }
+
 //
 //        if (locationManager != null) {
 //            locationManager.removeUpdates(locationListener);
 //            locationManager = null;
 //        }
-
+        unregisterReceiver(broadcastReceiver);
         Intent intent = new Intent(MainActivity.this, BackgroundActivity.class);
         stopService(intent);
+
  }
 
 
