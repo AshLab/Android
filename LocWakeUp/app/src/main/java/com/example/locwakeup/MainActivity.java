@@ -35,8 +35,8 @@ public class MainActivity extends AppCompatActivity {
 
     private BroadcastReceiver broadcastReceiver;
 
-    private Handler handler;
-    private Runnable runnable;
+   // private Handler handler;
+   // private Runnable runnable;
 
     //Static Codes
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     private int switchStatus;
 
     private Instant currentTime;
-    private Instant updatedTime;
+    private Instant updatedTime = Instant.now();
     private Duration duration;
 
     {
@@ -89,9 +89,6 @@ public class MainActivity extends AppCompatActivity {
         button=findViewById(R.id.buttonAdd);
         lastUpdateButton=findViewById(R.id.lastUpdateButton);
 
-        //Initialize Location Manager, Vibrator & Media player
-        //locationManager=(LocationManager) getSystemService(LOCATION_SERVICE);
-
 
         //Update Destination Lat and Long
         textDesLat.setText("Lat " + destinationLat);
@@ -105,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
         initializeButton();
 
-        initializeHandler();
+        //initializeHandler();
 
         initializeBroadcast();
 
@@ -143,14 +140,14 @@ public class MainActivity extends AppCompatActivity {
                 currentTime = Instant.now();
                 updatedTime = Instant.now();
 
-                handler.post(runnable);
+
             }
             else{
                 switchStatus=0;
                 Intent intent = new Intent(MainActivity.this, BackgroundActivity.class);
                 stopService(intent);
 
-                handler.removeCallbacks(runnable);
+
             }
         });
     }
@@ -165,8 +162,20 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        lastUpdateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                currentTime = Instant.now();
+                duration = Duration.between(updatedTime, currentTime);
+
+                textDuration.setText("Last Updated (s) :  " + duration.getSeconds());
+            }
+        });
+
     }
 
+/*
     private void initializeHandler()
     {
         Log.d(TAG, "initializeHandler: ");
@@ -185,11 +194,10 @@ public class MainActivity extends AppCompatActivity {
             }
         };
     }
+*/
 
 
-
-
-   private void updateLocation(Location location, float distance)
+    private void updateLocation(Location location, float distance)
    {
        Log.d(TAG, "updateLocation: ");
 
@@ -253,8 +261,6 @@ public class MainActivity extends AppCompatActivity {
         unregisterReceiver(broadcastReceiver);
         Intent intent = new Intent(MainActivity.this, BackgroundActivity.class);
         stopService(intent);
-
-        handler.removeCallbacks(runnable);
 
 
  }
