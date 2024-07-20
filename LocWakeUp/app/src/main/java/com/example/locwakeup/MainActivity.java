@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Internal Variables
 
-    private long locUpdateDelay=5000;  //in milli seconds
+    private long locUpdateDelay=1000;  //in milli seconds
     private float locMinDistance=1;  //in meters
 
     private float alarmDistance = 300; //in meters
@@ -125,6 +125,9 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "initializeSlideSwitch: ");
         aSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if(isChecked){
+
+                Log:d(TAG, "initializeSlideSwitch: Switch On");
+
                 switchStatus=1;
 
                 Intent intent = new Intent(MainActivity.this, BackgroundActivity.class);
@@ -143,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
             else{
+                Log:d(TAG, "initializeSlideSwitch: Switch Off");
                 switchStatus=0;
                 Intent intent = new Intent(MainActivity.this, BackgroundActivity.class);
                 stopService(intent);
