@@ -8,113 +8,114 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/textCurLong"
-        android:layout_width="140dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="188dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="83dp"
-        android:layout_marginBottom="356dp"
+        android:id="@+id/textCurLat"
+        android:layout_width="133dp"
+        android:layout_height="22dp"
+        android:layout_marginBottom="68dp"
         android:text="Lat"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.676"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textCurLat" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.313" />
+
+    <TextView
+        android:id="@+id/textCurLong"
+        android:layout_width="133dp"
+        android:layout_height="22dp"
+        android:text="Lat"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.676"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.361" />
 
     <TextView
         android:id="@+id/labelCur"
-        android:layout_width="78dp"
-        android:layout_height="20dp"
+        android:layout_width="92dp"
+        android:layout_height="33dp"
         android:text="Current"
+        android:textColor="#CFCDBD"
+        android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.102"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/labelDes"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.436" />
+        app:layout_constraintVertical_bias="0.258" />
 
     <TextView
         android:id="@+id/textDesLong"
         android:layout_width="133dp"
         android:layout_height="22dp"
-        android:layout_marginStart="197dp"
-        android:layout_marginTop="47dp"
-        android:layout_marginEnd="81dp"
-        android:layout_marginBottom="531dp"
         android:text="Long"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textDesLat" />
-
-    <TextView
-        android:id="@+id/labelDes"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Destination"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.104"
+        app:layout_constraintHorizontal_bias="0.676"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.223" />
+        app:layout_constraintVertical_bias="0.074" />
 
     <TextView
         android:id="@+id/textDesLat"
         android:layout_width="133dp"
         android:layout_height="22dp"
-        android:layout_marginStart="197dp"
-        android:layout_marginTop="109dp"
-        android:layout_marginEnd="81dp"
-        android:layout_marginBottom="47dp"
         android:text="Lat"
-        app:layout_constraintBottom_toTopOf="@+id/textDesLong"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.676"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.146" />
 
     <TextView
-        android:id="@+id/textCurLat"
-        android:layout_width="140dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="188dp"
-        android:layout_marginTop="43dp"
-        android:layout_marginEnd="83dp"
-        android:layout_marginBottom="68dp"
-        android:text="Lat"
-        app:layout_constraintBottom_toTopOf="@+id/textCurLong"
+        android:id="@+id/labelDes"
+        android:layout_width="92dp"
+        android:layout_height="33dp"
+        android:text="Destination"
+        android:textColor="#CFCDBD"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.047"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textDesLong" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.047" />
 
     <TextView
         android:id="@+id/labelDistance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="34dp"
-        android:layout_marginTop="132dp"
-        android:layout_marginEnd="73dp"
-        android:layout_marginBottom="250dp"
+        android:layout_width="114dp"
+        android:layout_height="36dp"
         android:text="DIstance(m)"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/textDist"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/labelCur" />
-
-    <TextView
-        android:id="@+id/textDist"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="73dp"
-        android:layout_marginTop="85dp"
-        android:layout_marginEnd="165dp"
-        android:layout_marginBottom="252dp"
-        android:text="distance"
+        android:textColor="#CFCDBD"
+        android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/labelDistance"
-        app:layout_constraintTop_toBottomOf="@+id/textCurLong" />
+        app:layout_constraintHorizontal_bias="0.05"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.445" />
+
+    <TextView
+        android:id="@+id/distance"
+        android:layout_width="133dp"
+        android:layout_height="23dp"
+        android:text="distance"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.676"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Switch
         android:id="@+id/locEnable"
@@ -127,23 +128,45 @@
         android:text="Enable"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.586"
+        app:layout_constraintHorizontal_bias="0.31"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textCurLong"
-        app:layout_constraintVertical_bias="0.483" />
+        app:layout_constraintVertical_bias="0.734" />
 
     <Button
         android:id="@+id/buttonAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="173dp"
-        android:layout_marginTop="33dp"
-        android:layout_marginEnd="138dp"
-        android:layout_marginBottom="25dp"
-        android:text="StartAct"
+        android:text="Configure"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.423"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/locEnable" />
+        app:layout_constraintTop_toBottomOf="@+id/locEnable"
+        app:layout_constraintVertical_bias="0.533" />
+
+    <TextView
+        android:id="@+id/duration"
+        android:layout_width="202dp"
+        android:layout_height="24dp"
+        android:text="Last Updated (s)"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.899"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.555" />
+
+    <Button
+        android:id="@+id/lastUpdateButton"
+        android:layout_width="75dp"
+        android:layout_height="36dp"
+        android:text="Get"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.559"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.615" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

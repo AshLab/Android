@@ -2,7 +2,6 @@ package com.example.locwakeup;
 
 import static android.util.Log.d;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -12,49 +11,60 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.health.connect.datatypes.ExerciseRoute;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Switch;
+
+import java.time.Duration;
+import java.time.Instant;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private TextView textDesLat, textDesLong, textCurLat, textCurLong, textDist;
+    private TextView textDesLat, textDesLong, textCurLat, textCurLong, textDist, textDuration;
     private Switch aSwitch;
 
-    private Button  button;
+    private Button  button, lastUpdateButton;
 
     private BroadcastReceiver broadcastReceiver;
+
+    private Handler handler;
+    private Runnable runnable;
 
     //Static Codes
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     //Internal Variables
 
-    private long locUpdateDelay=1000;  //in milli seconds
+    private long locUpdateDelay=5000;  //in milli seconds
     private float locMinDistance=1;  //in meters
 
-    private float alarmDistance = 1000; //in meters
+    private float alarmDistance = 300; //in meters
 
     private long vibrationTime = 20000;
 
-    private double destinationLat = 12.926235;
-    private double destinationLong= 77.683202;
+    // ********* GTP *********
+   // private double destinationLat = 12.926235;
+   // private double destinationLong= 77.683202;
+
+    // ********* Apollo Marathahalli *********
+    private double destinationLat = 12.9560330;
+    private double destinationLong= 77.71705380;
+
 
     private float distance ;
     private int switchStatus;
+
+    private Instant currentTime;
+    private Instant updatedTime;
+    private Duration duration;
 
     {
         switchStatus = 0;
@@ -72,10 +82,12 @@ public class MainActivity extends AppCompatActivity {
         textDesLat=findViewById(R.id.textDesLat);
         textDesLong=findViewById(R.id.textDesLong);
 
-        textDist=findViewById(R.id.textDist);
+        textDist=findViewById(R.id.distance);
+        textDuration=findViewById(R.id.duration);
         aSwitch=findViewById(R.id.locEnable);
 
         button=findViewById(R.id.buttonAdd);
+        lastUpdateButton=findViewById(R.id.lastUpdateButton);
 
         //Initialize Location Manager, Vibrator & Media player
         //locationManager=(LocationManager) getSystemService(LOCATION_SERVICE);
@@ -92,6 +104,8 @@ public class MainActivity extends AppCompatActivity {
         initializeSlideSwitch();
 
         initializeButton();
+
+        initializeHandler();
 
         initializeBroadcast();
 
@@ -115,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
         aSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if(isChecked){
                 switchStatus=1;
+
                 Intent intent = new Intent(MainActivity.this, BackgroundActivity.class);
                 intent.putExtra("destinationLat", destinationLat);
                 intent.putExtra("destinationLong", destinationLong);
@@ -124,11 +139,18 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("locMinDistance", locMinDistance);
 
                 startService(intent);
+
+                currentTime = Instant.now();
+                updatedTime = Instant.now();
+
+                handler.post(runnable);
             }
             else{
                 switchStatus=0;
                 Intent intent = new Intent(MainActivity.this, BackgroundActivity.class);
                 stopService(intent);
+
+                handler.removeCallbacks(runnable);
             }
         });
     }
@@ -145,14 +167,38 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void initializeHandler()
+    {
+        Log.d(TAG, "initializeHandler: ");
+        handler = new Handler(Looper.getMainLooper());
+
+        runnable = new Runnable() {
+            @Override
+            public void run()
+            {
+                currentTime = Instant.now();
+                duration = Duration.between(updatedTime, currentTime);
+
+                textDuration.setText("Last Updated (s) :  " + duration.getSeconds());
+
+                handler.postDelayed(this, 2000);
+            }
+        };
+    }
+
 
 
 
    private void updateLocation(Location location, float distance)
    {
        Log.d(TAG, "updateLocation: ");
+
+
        double latitude = location.getLatitude();
        double longitude = location.getLongitude();
+
+       updatedTime = Instant.now();
+
 
        //Update Current Lat and Long
        textCurLat.setText("Lat " + latitude);
@@ -160,6 +206,12 @@ public class MainActivity extends AppCompatActivity {
 
        //Update Distance
        textDist.setText("Dist " + distance);
+
+
+
+
+       //Update Duration
+
    }
 
    private void initializeBroadcast()
@@ -172,6 +224,8 @@ public class MainActivity extends AppCompatActivity {
 
                 Log.d(TAG, "Broadcast Received: Location " + location.getLatitude() + " " + location.getLongitude());
                 Log.d(TAG, "Broadcast Received: Distance " + distance);
+
+
 
                 if (location != null) {
                     updateLocation(location, distance);
@@ -196,14 +250,12 @@ public class MainActivity extends AppCompatActivity {
      Log.d(TAG, "onDestroy: ");
         super.onDestroy();
 
-//
-//        if (locationManager != null) {
-//            locationManager.removeUpdates(locationListener);
-//            locationManager = null;
-//        }
         unregisterReceiver(broadcastReceiver);
         Intent intent = new Intent(MainActivity.this, BackgroundActivity.class);
         stopService(intent);
+
+        handler.removeCallbacks(runnable);
+
 
  }
 
