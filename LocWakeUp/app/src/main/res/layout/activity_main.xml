@@ -125,7 +125,7 @@
         android:layout_marginTop="206dp"
         android:layout_marginEnd="193dp"
         android:layout_marginBottom="123dp"
-        android:text="Enable"
+        android:text="Start"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.31"

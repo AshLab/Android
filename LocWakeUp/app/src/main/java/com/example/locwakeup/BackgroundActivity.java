@@ -36,6 +36,8 @@ public class BackgroundActivity extends Service {
     private Vibrator vibrator;
     private MediaPlayer mediaPlayer;
 
+    ConfigurationStatic configurationStatic = new ConfigurationStatic();
+
     //Variables and Configuration
     private final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private long locUpdateDelay = 5000;
@@ -49,7 +51,7 @@ public class BackgroundActivity extends Service {
 
     private int alarmStatus = 0;
 
-    public void onCreate()
+      public void onCreate()
     {
         super.onCreate();
 
@@ -94,6 +96,8 @@ public class BackgroundActivity extends Service {
 
             alarmDistance = intent.getFloatExtra("alarmDistance", 10);
             vibrationTime = intent.getLongExtra("vibrationTime", 500);
+
+            Log.d(TAG, "onStartCommand: " + locUpdateDelay + " " + locMinDistance + " " + alarmDistance + " " + vibrationTime);
 
             targetLocation.setLatitude(destinationLatitude);
             targetLocation.setLongitude(destinationLongitude);

@@ -24,6 +24,8 @@ import android.widget.Switch;
 import java.time.Duration;
 import java.time.Instant;
 
+import com.example.locwakeup.ConfigurationStatic;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -41,14 +43,18 @@ public class MainActivity extends AppCompatActivity {
     //Static Codes
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
-    //Internal Variables
+    ConfigurationStatic configurationStatic = new ConfigurationStatic();
 
-    private long locUpdateDelay=1000;  //in milli seconds
-    private float locMinDistance=1;  //in meters
+//    //Internal Variables
+//
+//    private long locUpdateDelay=1000;  //in milli seconds
+//    private float locMinDistance=1;  //in meters
+//
+//    private float alarmDistance = 300; //in meters
+//
+//    private long vibrationTime = 20000;
 
-    private float alarmDistance = 300; //in meters
 
-    private long vibrationTime = 20000;
 
     // ********* GTP *********
    // private double destinationLat = 12.926235;
@@ -95,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         textDesLong.setText("Long " + destinationLong );
 
 
-
+        configurationStatic.initializeConfiguration(this);
 
         //Initialize Slide Switch and Call back
         initializeSlideSwitch();
@@ -133,10 +139,10 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, BackgroundActivity.class);
                 intent.putExtra("destinationLat", destinationLat);
                 intent.putExtra("destinationLong", destinationLong);
-                intent.putExtra("vibrationTime", vibrationTime);
-                intent.putExtra("alarmDistance", alarmDistance);
-                intent.putExtra("locUpdateDelay", locUpdateDelay);
-                intent.putExtra("locMinDistance", locMinDistance);
+                intent.putExtra("vibrationTime", ConfigurationStatic.vibrationTime);
+                intent.putExtra("alarmDistance", ConfigurationStatic.alarmDistance);
+                intent.putExtra("locUpdateDelay", ConfigurationStatic.locUpdateDelay);
+                intent.putExtra("locMinDistance", ConfigurationStatic.locMinDistance);
 
                 startService(intent);
 
