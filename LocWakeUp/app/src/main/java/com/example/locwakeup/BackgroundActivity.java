@@ -6,6 +6,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -36,7 +37,8 @@ public class BackgroundActivity extends Service {
     private Vibrator vibrator;
     private MediaPlayer mediaPlayer;
 
-    ConfigurationStatic configurationStatic = new ConfigurationStatic();
+
+
 
     //Variables and Configuration
     private final int LOCATION_PERMISSION_REQUEST_CODE = 1;

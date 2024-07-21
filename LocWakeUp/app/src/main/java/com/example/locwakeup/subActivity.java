@@ -15,7 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class subActivity extends AppCompatActivity {
 
     //Initialize button
-    Button setbutton, addButton,readButton;
+    Button setbutton, addButton,readButton,deleteButton;
     TextView userNameText, userLatText, userLongText;
     TextView locDelayText, locDistanceText, alarmDistanceText,vibDelayText;
 
@@ -36,6 +36,7 @@ public class subActivity extends AppCompatActivity {
         setbutton= findViewById(R.id.setButton);
         addButton= findViewById(R.id.addButton);
         readButton= findViewById(R.id.readButton);
+        deleteButton= findViewById(R.id.deleteButton);
 
         userNameText= findViewById(R.id.userNameText);
         userLatText= findViewById(R.id.userLatText);
@@ -53,9 +54,12 @@ public class subActivity extends AppCompatActivity {
 
         configurationStatic.initializeConfiguration(this);
 
+        writeDefaultLocation();
+
         initializeSetButton();
         initializeAddButton();
         initializeReadButton();
+        initializeDeleteButton();
 
         displayConfiguration();
 
@@ -77,11 +81,15 @@ public class subActivity extends AppCompatActivity {
         Log.d("subActivity", "initializeAddButton");
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                editor.putString("userName", userNameText.getText().toString());
-                editor.putString("userLat", userLatText.getText().toString());
-                editor.putString("userLong", userLongText.getText().toString());
-                editor.commit();
+            public void onClick(View v)
+            {
+                Log.d("subActivity", "onClick");
+               String userName= userNameText.getText().toString();
+               String userLat= userLatText.getText().toString();
+               String userLong= userLongText.getText().toString();
+               editor.putString(userName, userName + " " + userLat + " " + userLong);
+
+               editor.commit();
 
                 Toast.makeText(subActivity.this, "Saved", Toast.LENGTH_SHORT).show();
             }
@@ -93,9 +101,53 @@ public class subActivity extends AppCompatActivity {
         readButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                userNameText.setText(sharedPreferences.getString("userName", ""));
-                userLatText.setText(sharedPreferences.getString("userLat", ""));
-                userLongText.setText(sharedPreferences.getString("userLong", ""));
+                Log.d("subActivity", "onClick");
+                String userName= userNameText.getText().toString();
+
+
+                String storedLocation = sharedPreferences.getString(userName, "");
+
+                if (storedLocation.isEmpty())
+                {
+                    Toast.makeText(subActivity.this, "No Data Found", Toast.LENGTH_SHORT).show();
+
+                }
+
+                else
+                {
+                    String[] location = storedLocation.split(" ");
+
+                    userNameText.setText(location[0]);
+                    userLatText.setText(location[1]);
+                    userLongText.setText(location[2]);
+                }
+            }
+        });
+    }
+
+    private void initializeDeleteButton()
+    {
+        Log.d("subActivity", "initializeDeleteButton");
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("subActivity", "onClick");
+                String userName= userNameText.getText().toString();
+                String userName_ext = sharedPreferences.getString(userName, "");
+                if (userName_ext.isEmpty())
+                {
+                    Toast.makeText(subActivity.this, "No Data Found", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                else {
+                    editor.remove(userName);
+                    editor.commit();
+                    Toast.makeText(subActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
+                }
+
+
+                ;
             }
         });
     }
@@ -126,6 +178,37 @@ public class subActivity extends AppCompatActivity {
         configurationStatic.commitConfig();
 
         Toast.makeText(subActivity.this, "Configuration Saved", Toast.LENGTH_SHORT).show();
+
+    }
+
+    private void writeDefaultLocation()
+    {
+        Log.d("subActivity", "writeDefaultLocation");
+
+        String userName= "Office";
+        String userLat= "12.926235";
+        String userLong= "77.683202";
+        String userName_ext="";
+
+        userName_ext= sharedPreferences.getString(userName, "");
+
+        if (userName_ext.isEmpty()) {
+            Log.d("subActivity", "OfficeDefaultLocation");
+            editor.putString(userName, userName + " " + userLat + " " + userLong);
+            editor.commit();
+        }
+
+        userName= "Home";
+        userLat= "10.408850962";
+        userLong= "77.95965891";
+        userName_ext= sharedPreferences.getString(userName, "");
+
+        if (userName_ext.isEmpty()){
+            Log.d("subActivity", "HomeDefaultLocation");
+            editor.putString(userName, userName + " " + userLat + " " + userLong);
+            editor.commit();
+        }
+
 
     }
 

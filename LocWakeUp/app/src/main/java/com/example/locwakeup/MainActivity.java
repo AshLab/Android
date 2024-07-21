@@ -4,12 +4,14 @@ import static android.util.Log.d;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -17,12 +19,17 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Switch;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Map;
 
 import com.example.locwakeup.ConfigurationStatic;
 
@@ -35,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
     private Button  button, lastUpdateButton;
 
+    private Spinner locSpinner;;
+
     private BroadcastReceiver broadcastReceiver;
 
    // private Handler handler;
@@ -42,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Static Codes
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+
 
     ConfigurationStatic configurationStatic = new ConfigurationStatic();
 
@@ -95,6 +105,8 @@ public class MainActivity extends AppCompatActivity {
         button=findViewById(R.id.buttonAdd);
         lastUpdateButton=findViewById(R.id.lastUpdateButton);
 
+        locSpinner=findViewById(R.id.locSpinner);
+
 
         //Update Destination Lat and Long
         textDesLat.setText("Lat " + destinationLat);
@@ -102,6 +114,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         configurationStatic.initializeConfiguration(this);
+
+        initializelocSpinner();
 
         //Initialize Slide Switch and Call back
         initializeSlideSwitch();
@@ -124,6 +138,42 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void initializelocSpinner()
+    {
+        //String[] items = new String[]{"1000", "2000", "3000", "4000", "5000"};
+        Log.d(TAG, "initializelocSpinner: ");
+        SharedPreferences sharedPreferences=getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        Map<String, ?> locData =sharedPreferences.getAll();
+
+        String[] locKeys = locData.keySet().toArray(new String[0]);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, locKeys);
+        locSpinner.setAdapter(adapter);
+
+        locSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                String selectedItem = parent.getItemAtPosition(position).toString();
+                Log.d(TAG, "onItemSelected: " + selectedItem);
+
+                String loc_data= sharedPreferences.getString(selectedItem, null);
+
+                textDesLat.setText(loc_data.split(" ")[1]);
+                textDesLong.setText(loc_data.split(" ")[2]);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
+    }
+
+
     //Register Switch Callback
 
     private void initializeSlideSwitch()
@@ -135,6 +185,13 @@ public class MainActivity extends AppCompatActivity {
                 Log:d(TAG, "initializeSlideSwitch: Switch On");
 
                 switchStatus=1;
+
+
+                //Get Destination Lat and Long
+                destinationLat = Double.parseDouble(textDesLat.getText().toString());
+                destinationLong = Double.parseDouble(textDesLong.getText().toString());
+                Log.d(TAG, "initializeSlideSwitch: " + destinationLat + " " + destinationLong);
+                //Start Service
 
                 Intent intent = new Intent(MainActivity.this, BackgroundActivity.class);
                 intent.putExtra("destinationLat", destinationLat);
