@@ -4,6 +4,7 @@ import static android.util.Log.d;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
@@ -77,14 +78,18 @@ public class MainActivity extends AppCompatActivity {
 
     private float distance ;
     private int switchStatus;
+    {
+        switchStatus = 0;
+    }
 
     private Instant currentTime;
     private Instant updatedTime = Instant.now();
     private Duration duration;
 
-    {
-        switchStatus = 0;
-    }
+    private final int uiactive=1;
+    private final int uiinactive=0;
+
+
 
 
     @Override
@@ -202,6 +207,9 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("locMinDistance", ConfigurationStatic.locMinDistance);
 
                 startService(intent);
+                Log.d(TAG, "initializeSlideSwitch: Service Started");
+
+                setUIUpdate(uiactive);
 
                 currentTime = Instant.now();
                 updatedTime = Instant.now();
@@ -317,7 +325,32 @@ public class MainActivity extends AppCompatActivity {
    }
 
 
+protected void onPause(){
+        Log.d(TAG, "onPause: ");
+        super.onPause();
 
+        setUIUpdate(uiinactive);
+
+        Log:d(TAG, "onPause: " + uiinactive);
+
+
+        unregisterReceiver(broadcastReceiver);
+        Log.d(TAG, "onPause: Broacast Unregistered");
+
+}
+
+protected void onResume()
+{
+    Log.d(TAG, "onResume: ");
+        super.onResume();
+        setUIUpdate(uiactive);
+
+        Log:d(TAG, "onResume: " + uiactive);
+
+        initializeBroadcast();
+        Log.d(TAG, "onResume: Broacast Registered");
+
+}
 
 
  protected void onDestroy()
@@ -325,11 +358,22 @@ public class MainActivity extends AppCompatActivity {
      Log.d(TAG, "onDestroy: ");
         super.onDestroy();
 
-        unregisterReceiver(broadcastReceiver);
+        //if(broadcastReceiver!=null)
+         //   unregisterReceiver(broadcastReceiver);
+
         Intent intent = new Intent(MainActivity.this, BackgroundActivity.class);
         stopService(intent);
 
 
+ }
+
+ private void setUIUpdate(int isActive)
+ {
+     Log.d(TAG, "setUIUpdate:" + isActive);
+
+     Intent intent = new Intent("mainactivity_state");
+     intent.putExtra("isActive", isActive);
+     LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
  }
 
 

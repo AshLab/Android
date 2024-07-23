@@ -5,7 +5,10 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -22,12 +25,15 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class BackgroundActivity extends Service {
 
     //Log Tag
     private static final String TAG = BackgroundActivity.class.getSimpleName();
     private static final String CHANNEL_ID = "LocationServiceChannel";
+
+    private BroadcastReceiver statusReceiver;
 
     private PowerManager.WakeLock wakeLock;
     private LocationManager locationManager;
@@ -37,11 +43,13 @@ public class BackgroundActivity extends Service {
     private Vibrator vibrator;
     private MediaPlayer mediaPlayer;
 
-
+    Intent intent = new Intent("locWakeUp_location_update");
 
 
     //Variables and Configuration
     private final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private int  isActive = 1;
+
     private long locUpdateDelay = 5000;
     private float locMinDistance = 100;
 
@@ -53,7 +61,7 @@ public class BackgroundActivity extends Service {
 
     private int alarmStatus = 0;
 
-      public void onCreate()
+    public void onCreate()
     {
         super.onCreate();
 
@@ -79,6 +87,10 @@ public class BackgroundActivity extends Service {
 
         wakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "BackgroundActivity:WakeLock");
         wakeLock.acquire(10*60*60*1000L /*600 minutes*/);
+
+        registerBroadcastReceiver();
+
+        isActive=1;  //Send broadcast to MainActivity
 
         Log.d(TAG, "onCreate: WakeLock acquired");
     }
@@ -144,8 +156,11 @@ public class BackgroundActivity extends Service {
             float distance = calculateDistance(location);
 
             startAlarm(distance);
-            broadcastLocation(location, distance);
 
+            if (isActive == 1)
+                broadcastLocation(location, distance);
+
+            Log.d(TAG, "onLocationChanged: " + isActive);
             Log.d(TAG, "onLocationChanged: " + distance);
             Log.d(TAG, "onLocationChanged: " + location.getLatitude() + " " + location.getLongitude());
             Log.d(TAG, "onLocationChanged: " + targetLocation.getLatitude() + " " + targetLocation.getLongitude());
@@ -203,6 +218,7 @@ public class BackgroundActivity extends Service {
             wakeLock.release();
         }
         Log.d(TAG, "onDestroy");
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(statusReceiver);
     }
 
 
@@ -224,11 +240,33 @@ public class BackgroundActivity extends Service {
 
     private void broadcastLocation(Location location, float distance)
     {
-        Intent intent = new Intent("locWakeUp_location_update");
+
         intent.putExtra("location", location);
         intent.putExtra("distance", distance);
         sendBroadcast(intent);
+
+        Log.d(TAG, "broadcastLocation: " + location.getLatitude() + " " + location.getLongitude());
     }
+
+    private void registerBroadcastReceiver()
+    {
+        statusReceiver=new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if(intent.getAction().equals("mainactivity_state"))
+                {
+                    isActive = intent.getIntExtra("isActive", 0);
+                    Log.d(TAG, "onReceive: " + isActive);
+                }
+            }
+
+        };
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(statusReceiver, new IntentFilter("mainactivity_state"));
+    }
+
+
+
 
     @Nullable
     @Override
