@@ -4,6 +4,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.util.Log;
 
 
@@ -18,6 +19,9 @@ public  class ConfigurationStatic
     public static float alarmDistance = 300; //in meters
 
     public static long vibrationTime = 20000;
+
+    private String grabbedLat;
+    private String grabbedLong;
 
     SharedPreferences sharedPreferences;
 
@@ -49,7 +53,38 @@ public  class ConfigurationStatic
         locMinDistance = sharedPreferences.getFloat("locMinDistance",locMinDistance);
         alarmDistance = sharedPreferences.getFloat("alarmDistance",alarmDistance);
         vibrationTime = sharedPreferences.getLong("vibrationTime",vibrationTime);
+
+        grabbedLat = sharedPreferences.getString("grabbed_latitude","");
+        grabbedLong = sharedPreferences.getString("grabbed_longitude","");
+
+
     }
 
+    public void grabLocation(Location location)
+    {
+        Log.d("ConfigurationStatic","grabLocation");
+        if (location == null)
+        {
+            Log.d("ConfigurationStatic","grabLocation: location is null");
+            return;
+        }
+        else
+        {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("grabbed_latitude",String.valueOf(location.getLatitude()));
+            editor.putString("grabbed_longitude",String.valueOf(location.getLongitude()));
+            editor.apply();
+        }
+    }
+
+    public String getGrabbedLat()
+    {
+        return grabbedLat;
+    }
+
+    public String getGrabbedLong()
+    {
+        return grabbedLong;
+    }
 
 }

@@ -147,7 +147,7 @@ public class subActivity extends AppCompatActivity {
                 }
 
 
-                ;
+
             }
         });
     }
@@ -163,6 +163,10 @@ public class subActivity extends AppCompatActivity {
       locDistanceText.setText(Float.toString(ConfigurationStatic.locMinDistance));
       alarmDistanceText.setText(Float.toString(ConfigurationStatic.alarmDistance));
       vibDelayText.setText(Long.toString(ConfigurationStatic.vibrationTime));
+
+      userLatText.setText(configurationStatic.getGrabbedLat());
+      userLongText.setText(configurationStatic.getGrabbedLong());
+
 
     }
 

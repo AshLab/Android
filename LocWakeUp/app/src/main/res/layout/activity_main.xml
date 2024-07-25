@@ -8,19 +8,32 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/labelCur"
+        android:id="@+id/labelDes"
         android:layout_width="92dp"
         android:layout_height="33dp"
-        android:text="Current"
+        android:text="Destination"
         android:textColor="#CFCDBD"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.137"
+        app:layout_constraintHorizontal_bias="0.131"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.451" />
+        app:layout_constraintVertical_bias="0.233" />
+
+    <TextView
+        android:id="@+id/textDesLat"
+        android:layout_width="133dp"
+        android:layout_height="22dp"
+        android:text="Lat"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.676"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.217" />
 
     <TextView
         android:id="@+id/textCurLat"
@@ -34,20 +47,22 @@
         app:layout_constraintHorizontal_bias="0.676"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.477" />
+        app:layout_constraintVertical_bias="0.411" />
 
     <TextView
-        android:id="@+id/textCurLong"
-        android:layout_width="133dp"
-        android:layout_height="22dp"
-        android:text="Long"
+        android:id="@+id/labelCur"
+        android:layout_width="92dp"
+        android:layout_height="33dp"
+        android:text="Current"
+        android:textColor="#CFCDBD"
+        android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.676"
+        app:layout_constraintHorizontal_bias="0.137"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.475" />
+        app:layout_constraintVertical_bias="0.391" />
 
     <TextView
         android:id="@+id/textDesLong"
@@ -60,35 +75,20 @@
         app:layout_constraintHorizontal_bias="0.676"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.322" />
+        app:layout_constraintVertical_bias="0.263" />
 
     <TextView
-        android:id="@+id/textDesLat"
+        android:id="@+id/textCurLong"
         android:layout_width="133dp"
         android:layout_height="22dp"
-        android:text="Lat"
+        android:text="Long"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.676"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.276" />
-
-    <TextView
-        android:id="@+id/labelDes"
-        android:layout_width="92dp"
-        android:layout_height="33dp"
-        android:text="Destination"
-        android:textColor="#CFCDBD"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.131"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.293" />
+        app:layout_constraintVertical_bias="0.416" />
 
     <TextView
         android:id="@+id/labelDistance"
@@ -107,7 +107,7 @@
 
     <Button
         android:id="@+id/lastUpdateButton"
-        android:layout_width="75dp"
+        android:layout_width="80dp"
         android:layout_height="36dp"
         android:text="Get"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -194,5 +194,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.104" />
+
+    <Button
+        android:id="@+id/grabButton"
+        android:layout_width="80dp"
+        android:layout_height="36dp"
+        android:text="Grab"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.567"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.476" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

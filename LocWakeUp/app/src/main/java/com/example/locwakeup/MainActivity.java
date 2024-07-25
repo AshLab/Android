@@ -27,6 +27,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -41,11 +42,12 @@ public class MainActivity extends AppCompatActivity {
     private TextView textDesLat, textDesLong, textCurLat, textCurLong, textDist, textDuration;
     private Switch aSwitch;
 
-    private Button  button, lastUpdateButton;
+    private Button  button, lastUpdateButton, grabButton;
 
     private Spinner locSpinner;;
 
     private BroadcastReceiver broadcastReceiver;
+    private Location updatedLocation=null;
 
    // private Handler handler;
    // private Runnable runnable;
@@ -109,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
 
         button=findViewById(R.id.buttonAdd);
         lastUpdateButton=findViewById(R.id.lastUpdateButton);
+        grabButton=findViewById(R.id.grabButton);
 
         locSpinner=findViewById(R.id.locSpinner);
 
@@ -230,17 +233,23 @@ public class MainActivity extends AppCompatActivity {
     private void initializeButton()
     {
         Log.d(TAG, "initializeButton: ");
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(TAG, "Config Button Clicked: ");
                 Intent intent = new Intent(MainActivity.this, subActivity.class);
                 startActivity(intent);
             }
         });
 
-        lastUpdateButton.setOnClickListener(new View.OnClickListener() {
+        lastUpdateButton.setOnClickListener(new View.OnClickListener()
+        {
+
             @Override
             public void onClick(View v) {
+
+                Log.d(TAG, "Last Update Button Clicked: ");
                 currentTime = Instant.now();
                 duration = Duration.between(updatedTime, currentTime);
 
@@ -248,6 +257,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        grabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "Grab Button Clicked: ");
+                if (updatedLocation != null) {
+                    Log.d(TAG, "Grab Button Clicked: Location Not Null");
+                    configurationStatic.grabLocation(updatedLocation);
+                }
+                else
+                {
+                    Log.d(TAG, "Grab Button Clicked: Location Null");
+                    Toast.makeText(MainActivity.this, "Nothing to Grab", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
 /*
@@ -286,6 +310,8 @@ public class MainActivity extends AppCompatActivity {
        //Update Current Lat and Long
        textCurLat.setText("Lat " + latitude);
        textCurLong.setText("Long " + longitude);
+
+       updatedLocation=location; //Set the received location to grab
 
        //Update Distance
        textDist.setText("Dist " + distance);
