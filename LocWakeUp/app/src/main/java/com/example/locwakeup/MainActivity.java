@@ -214,6 +214,9 @@ public class MainActivity extends AppCompatActivity {
 
                 setUIUpdate(uiactive);
 
+                Log.d(TAG, "Disabling Spinner");
+                locSpinner.setEnabled(false);
+
                 currentTime = Instant.now();
                 updatedTime = Instant.now();
 
@@ -222,6 +225,10 @@ public class MainActivity extends AppCompatActivity {
             else{
                 Log:d(TAG, "initializeSlideSwitch: Switch Off");
                 switchStatus=0;
+
+                Log.d(TAG, "Enabling Spinner");
+                locSpinner.setEnabled(true);
+
                 Intent intent = new Intent(MainActivity.this, BackgroundActivity.class);
                 stopService(intent);
 
