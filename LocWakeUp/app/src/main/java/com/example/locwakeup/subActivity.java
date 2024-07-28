@@ -84,7 +84,7 @@ public class subActivity extends AppCompatActivity {
             public void onClick(View v)
             {
                 Log.d("subActivity", "onClick");
-               String userName= userNameText.getText().toString();
+               String userName= userNameText.getText().toString().replace(" ", "_");
                String userLat= userLatText.getText().toString();
                String userLong= userLongText.getText().toString();
                editor.putString(userName, userName + " " + userLat + " " + userLong);

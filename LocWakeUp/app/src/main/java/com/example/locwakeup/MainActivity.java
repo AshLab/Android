@@ -271,6 +271,7 @@ public class MainActivity extends AppCompatActivity {
                 if (updatedLocation != null) {
                     Log.d(TAG, "Grab Button Clicked: Location Not Null");
                     configurationStatic.grabLocation(updatedLocation);
+                    Toast.makeText(MainActivity.this, "Location Grabbed", Toast.LENGTH_SHORT).show();
                 }
                 else
                 {
