@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -13,12 +14,24 @@ import androidx.core.view.ViewCompat;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.example.waterlevel.UDPListener;
 
 public class MainActivity extends AppCompatActivity {
 
-    TextView topLevel, botLevel;
+
+
+    TextView topLevel, midLevel, botLevel;
+    TextView timeTX;
+    Switch alarmSW;
+
+    private Timer timer;
+    private Instant curTime, updatedTime;
+    private Duration duration;
 
     int port = 4000;
     UDPListener udpListener;
@@ -33,51 +46,92 @@ public class MainActivity extends AppCompatActivity {
 
         //Initialize UI
         topLevel = findViewById(R.id.topLevel);
+        midLevel = findViewById(R.id.midLevel);
         botLevel = findViewById(R.id.botLevel);
+        alarmSW = findViewById(R.id.alarmSW);
+        timeTX = findViewById(R.id.timeTX);
 
-        //Check and get permission
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
-           // ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_NETWORK_STATE}, 0);
-           // ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.INTERNET}, 1);
-
-            Log.d("MainActivity", "Permission granted");
-        }
-
-       // ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_NETWORK_STATE, android.Manifest.permission.INTERNET}, 0);
+        initializeSlideSwitch();
 
 
         //initialize UDP Listener
-         udpListener = new UDPListener(this, port, topLevel, botLevel);
+         udpListener = new UDPListener(this, port, topLevel, midLevel, botLevel);
 
-
+         //Start UDP Listener in a separate thread
          udpListener.start();
+
+
+        timer = new Timer();
+
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run()
+            {
+                runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        updateTimer();
+                    }
+                });
+            }
+
+        }, 0, 5000);
+
+
 
         }
 
-//        @Override
-//        protected void onDestroy() {
-//            super.onDestroy();
-//            // Stop the UDP listener when the activity is destroyed
-//            udpListener.stopListening();
-//            Log.d("MainActivity", "onDestroy() called");
-//        }
-//
-//        protected void onPause() {
-//            super.onPause();
-//            // Stop the UDP listener when the activity is paused
-//            udpListener.stopListening();
-//            Log.d("MainActivity", "onPause() called");
-//        }
-//
-//        protected void onResume() {
-//            super.onResume();
-//              Log.d("MainActivity", "onResume() called");
-//            // Start the UDP listener when the activity is resumed
-//              udpListener = new UDPListener(this, port, topLevel, botLevel);
-//            udpListener.start();
+        void initializeSlideSwitch()
+        {
+            alarmSW.setChecked(false);
+            udpListener.setSlidervalue(0);
 
-//
-//        }
+            //Creating Callback for Alarm Switch
+            alarmSW.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked) {
+                    udpListener.setSlidervalue(1);
+                    udpListener.initializeMediaPlayer();
+                }
+
+                else {
+                    udpListener.setSlidervalue(0);
+                    udpListener.stopAlarm();
+                }
+            });
+
+        }
+
+
+    void updateTimer()
+    {
+        curTime = Instant.now();
+        updatedTime = udpListener.getUpdatedTime();
+
+        duration = Duration.between(updatedTime, curTime);
+        timeTX.setText(String.valueOf(duration.getSeconds()));
+
+        Log.d("MainActivity", "updateTimer() called");
+
+
+    }
+
+
+
+    @Override
+        protected void onDestroy() {
+            super.onDestroy();
+
+            if(timer != null)
+                timer.cancel();
+
+            // Stop the UDP listener when the activity is destroyed
+            udpListener.stopListening();
+            Log.d("MainActivity", "onDestroy() called");
+        }
+
+
 
 
     }

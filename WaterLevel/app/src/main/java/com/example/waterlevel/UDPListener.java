@@ -1,11 +1,14 @@
 package com.example.waterlevel;
 
 import android.app.Activity;
+import android.media.MediaPlayer;
+import android.media.metrics.LogSessionId;
 import android.util.Log;
 import android.widget.TextView;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.time.Instant;
 
 public class UDPListener extends Thread {
     private DatagramSocket socket;
@@ -13,21 +16,91 @@ public class UDPListener extends Thread {
 
     private boolean running = true;
     private int port=0;
+    private int slidervalue=0;
 
-    private TextView topLevel, botLevel;
+    private TextView topLevel, midLevel, botLevel;
     private Activity activity;
 
+    private MediaPlayer mediaPlayer;
+    private int alarmRepeat = 0;
 
-    public UDPListener(Activity activity, int port, TextView topLevel, TextView botLevel) {
+    private Instant updatedTime = Instant.now();
+
+
+    public UDPListener(Activity activity, int port, TextView topLevel, TextView midLevel,  TextView botLevel) {
+
         this.port = port;
         this.running = true;
+
         this.topLevel = topLevel;
+        this.midLevel = midLevel;
         this.botLevel = botLevel;
+
         this.activity = activity;
+
+        initializeMediaPlayer();
 
         Log.d("UDPListener", "UDPListener created");
 
 
+    }
+
+    public void initializeMediaPlayer()
+    {
+
+        mediaPlayer = MediaPlayer.create(activity,R.raw.alarm);
+        //mediaPlayer.setLooping(true);
+        alarmRepeat = 0;
+
+        Log.d("UDPListener", "MediaPlayer created");
+
+    }
+
+
+    public void playAlarm()
+    {
+        Log.d("UDPListener", "playAlarm() called");
+
+        if (alarmRepeat == 0 && mediaPlayer != null)
+        {
+
+            mediaPlayer.start();
+            alarmRepeat = alarmRepeat + 1;
+
+            Log.d("UDPListener", "MediaPlayer started");
+        }
+
+    }
+
+    public void stopAlarm()
+    {
+        if (mediaPlayer != null)
+        {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+        }
+        alarmRepeat = 0;
+
+        Log.d("UDPListener", "MediaPlayer stopped");
+    }
+
+    public void setSlidervalue(int slidervalue)
+    {
+        this.slidervalue = slidervalue;
+
+
+        Log.d("UDPListener", "slider value: " + slidervalue);
+        Log.d("UDPListener", "alarmRepeat: " + alarmRepeat);
+    }
+
+    public void setUpdatedTime()
+    {
+        updatedTime = Instant.now();
+    }
+
+    public Instant getUpdatedTime()
+    {
+        return updatedTime;
     }
 
     @Override
@@ -38,6 +111,9 @@ public class UDPListener extends Thread {
             while (running) {
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
+
+                setUpdatedTime();
+
                 String message = new String(packet.getData(), 0, packet.getLength());
                 Log.d("UDPListenerThread", "Received message: " + message);
 
@@ -48,31 +124,47 @@ public class UDPListener extends Thread {
                         if (message.equals("3"))
                         {
                             topLevel.setText("1");
+                            midLevel.setText("1");
                             botLevel.setText("1");
+
                         }
 
                         else if (message.equals("2"))
                         {
-                            topLevel.setText("1");
-                            botLevel.setText("0");
+                            topLevel.setText("0");
+                            midLevel.setText("1");
+                            botLevel.setText("1");
                         }
                         else if (message.equals("1"))
                         {
                             topLevel.setText("0");
+                            midLevel.setText("0");
                             botLevel.setText("1");
                         }
 
                         else
                         {
                             topLevel.setText("0");
+                            midLevel.setText("0");
                             botLevel.setText("0");
                         }
 
                     }
                 });
 
-                Thread.sleep(2000);
+                //Check and play alarm
+                if (message.equals("3"))
+                {
+                    if(slidervalue==1)
+                    {
+                        playAlarm();
+                    }
+                }
 
+
+                //Thread.sleep(2000);
+
+                Log.d("UDPListenerThread", "slider value: " + slidervalue);
 
             }
         } catch (Exception e) {
@@ -89,6 +181,8 @@ public class UDPListener extends Thread {
 
     public void stopListening() {
         running = false;
+        stopAlarm();
+
         if (socket != null && !socket.isClosed()) {
             socket.close();
         }
