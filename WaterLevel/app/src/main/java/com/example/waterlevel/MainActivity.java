@@ -51,14 +51,15 @@ public class MainActivity extends AppCompatActivity {
         alarmSW = findViewById(R.id.alarmSW);
         timeTX = findViewById(R.id.timeTX);
 
-        initializeSlideSwitch();
-
 
         //initialize UDP Listener
          udpListener = new UDPListener(this, port, topLevel, midLevel, botLevel);
 
+         initializeSlideSwitch();
          //Start UDP Listener in a separate thread
          udpListener.start();
+
+
 
 
         timer = new Timer();

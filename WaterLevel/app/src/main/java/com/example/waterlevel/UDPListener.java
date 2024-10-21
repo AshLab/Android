@@ -60,6 +60,7 @@ public class UDPListener extends Thread {
     public void playAlarm()
     {
         Log.d("UDPListener", "playAlarm() called");
+        Log.d("UDPListener", "alarmRepeat: " + alarmRepeat);
 
         if (alarmRepeat == 0 && mediaPlayer != null)
         {
