@@ -36,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
     int port = 4000;
     UDPListener udpListener;
 
+    int slidervalue = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -73,7 +75,9 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run()
                     {
+
                         updateTimer();
+                        setSlidervalue(udpListener.getSlidervalue());
                     }
                 });
             }
@@ -92,11 +96,14 @@ public class MainActivity extends AppCompatActivity {
             //Creating Callback for Alarm Switch
             alarmSW.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if (isChecked) {
+
+                    slidervalue=1;
                     udpListener.setSlidervalue(1);
                     udpListener.initializeMediaPlayer();
                 }
 
                 else {
+                    slidervalue=0;
                     udpListener.setSlidervalue(0);
                     udpListener.stopAlarm();
                 }
@@ -117,6 +124,23 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+    void setSlidervalue(int slidervalue) {
+        if (slidervalue == 1 && this.slidervalue == 0) {
+
+            alarmSW.setChecked(true);
+            Log.d("MainActivity", "Slider UI set to true");
+        }
+
+        else if (slidervalue == 0 && this.slidervalue == 1) {
+            alarmSW.setChecked(false);
+
+            Log.d("MainActivity", "Slider UI set to false");
+        }
+
+
+    }
+
 
 
 

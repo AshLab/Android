@@ -23,6 +23,8 @@ public class UDPListener extends Thread {
 
     private MediaPlayer mediaPlayer;
     private int alarmRepeat = 0;
+    private int alarmPlaying=0;
+
 
     private Instant updatedTime = Instant.now();
 
@@ -51,6 +53,16 @@ public class UDPListener extends Thread {
         mediaPlayer = MediaPlayer.create(activity,R.raw.alarm);
         //mediaPlayer.setLooping(true);
         alarmRepeat = 0;
+        alarmPlaying=0;
+
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                alarmPlaying=0;
+
+                Log.d("UDPListener", "MediaPlayer completed");
+            }
+        });
 
         Log.d("UDPListener", "MediaPlayer created");
 
@@ -66,10 +78,11 @@ public class UDPListener extends Thread {
         {
 
             mediaPlayer.start();
+            alarmPlaying=1;
             alarmRepeat = alarmRepeat + 1;
+        }
 
             Log.d("UDPListener", "MediaPlayer started");
-        }
 
     }
 
@@ -81,6 +94,7 @@ public class UDPListener extends Thread {
             mediaPlayer.release();
         }
         alarmRepeat = 0;
+        alarmPlaying=0;
 
         Log.d("UDPListener", "MediaPlayer stopped");
     }
@@ -92,6 +106,11 @@ public class UDPListener extends Thread {
 
         Log.d("UDPListener", "slider value: " + slidervalue);
         Log.d("UDPListener", "alarmRepeat: " + alarmRepeat);
+    }
+
+    public int getSlidervalue()
+    {
+        return slidervalue;
     }
 
     public void setUpdatedTime()
@@ -160,8 +179,23 @@ public class UDPListener extends Thread {
                     {
                         playAlarm();
                     }
+
+                 //Turn Off Alarm after the water level reaches 3rd stage
+                    if(alarmPlaying==0)
+                    {
+                        setSlidervalue(0);
+                    }
+
                 }
 
+                if (message.equals("2"))
+                {
+
+                    //Auto set the alarm when the water level reaches 2nd stage
+                    setSlidervalue(1);
+                    alarmRepeat=0;
+
+                }
 
                 //Thread.sleep(2000);
 
