@@ -141,7 +141,7 @@ public class UDPListener extends Thread {
                     @Override
                     public void run() {
 
-                        if (message.equals("3"))
+                        if (message.equals("2"))
                         {
                             topLevel.setText("1");
                             midLevel.setText("1");
@@ -149,7 +149,7 @@ public class UDPListener extends Thread {
 
                         }
 
-                        else if (message.equals("2"))
+                        else if (message.equals("3"))
                         {
                             topLevel.setText("0");
                             midLevel.setText("1");
@@ -173,7 +173,7 @@ public class UDPListener extends Thread {
                 });
 
                 //Check and play alarm
-                if (message.equals("3"))
+                if (message.equals("2"))
                 {
                     if(slidervalue==1)
                     {
@@ -188,7 +188,7 @@ public class UDPListener extends Thread {
 
                 }
 
-                if (message.equals("2"))
+                if (message.equals("0"))
                 {
 
                     //Auto set the alarm when the water level reaches 2nd stage
