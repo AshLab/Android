@@ -297,9 +297,14 @@ public class BackgroundActivity extends Service {
 
                         if(rahamActive)
                         {
+                            if (mpSoham == null) {
+                                Log.d(TAG, "rahamStarted: mpSoham null");
+                            }
 
-                            mpSoham.start();
-                            Log.d(TAG, "rahamStarted: ");
+                            else {
+                                mpSoham.start();
+                                Log.d(TAG, "rahamStarted: ");
+                            }
                         }
 
                         else
